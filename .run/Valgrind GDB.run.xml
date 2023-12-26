@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Valgrind GDB" type="CLion_Remote" version="1" remoteCommand=" | vgdb --multi --vargs --trace-children=yes" symbolFile="$PROJECT_DIR$/bin/push_swap" sysroot="/">
+    <debugger kind="GDB">/usr/bin/gdb</debugger>
+    <method v="2" />
+  </configuration>
+</component>
