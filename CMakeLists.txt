@@ -14,21 +14,27 @@ set(CMAKE_REQUIRED_LIBRARIES "-lbsd")
 
 include_directories(include)
 
-add_custom_target(libft.a ALL)
-add_custom_command(TARGET libft.a POST_BUILD
-        COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR}/libft
+set(FT_HEADERS "")
+set(FT_SOURCES "")
+file(GLOB FT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/libft/**/ft_*.h")
+file(GLOB FT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/libft/**/ft_*.c")
+
+set(FTLIB_name ft)
+set(FTLIB_filename libft.a)
+set(FTLIB_dir ${CMAKE_CURRENT_SOURCE_DIR}/libft)
+add_custom_command(OUTPUT ${FTLIB_dir}/${FTLIB_filename}
+        COMMAND make -C ${FTLIB_dir}
         )
-add_library(FTLIB STATIC IMPORTED)
-set_target_properties(FTLIB PROPERTIES
-        IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libft/libft.a # Make sure to use absolute path here
+add_custom_target(${FTLIB_filename} DEPENDS ${FTLIB_dir}/${FTLIB_filename})
+target_sources(${FTLIB_filename} PRIVATE ${FT_HEADERS} ${FT_SOURCES})
+
+add_library(${FTLIB_name} STATIC IMPORTED)
+add_dependencies(${FTLIB_name} ${FTLIB_filename})
+set_target_properties(${FTLIB_name} PROPERTIES
+        IMPORTED_LOCATION ${FTLIB_dir}/${FTLIB_filename} # Make sure to use absolute path here
         INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
         INTERFACE_COMPILE_DEFINITIONS "OPTIMISTIC"
 )
-
-set(FT_CFLAGS
-        -g3
-        -Wall -Wextra -Werror
-        -O0)
 
 set(TARGET_NAME push_swap)
 set(TARGET_HEADERS
@@ -42,6 +48,7 @@ file(GLOB TARGET_SOURCES "src/*.c")
 set(TARGET_CFLAGS
         -c -w
         -g3
+        -Wall -Wextra -Werror
         -fno-exceptions
         -ffunction-sections
         -fdata-sections
@@ -55,35 +62,31 @@ add_executable(${TARGET_NAME} ${TARGET_HEADERS} ${TARGET_SOURCES})
 target_include_directories(${TARGET_NAME} PRIVATE include src)
 target_compile_options(${TARGET_NAME} PRIVATE ${TARGET_CFLAGS})
 target_link_options(${TARGET_NAME} PRIVATE ${TARGET_LINK_FLAGS})
-target_link_libraries(${TARGET_NAME} bsd FTLIB Threads::Threads)
+target_link_libraries(${TARGET_NAME} bsd ${FTLIB_name} Threads::Threads)
 set_target_properties(${TARGET_NAME} PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 )
+
 # https://youtrack.jetbrains.com/issue/CPP-22289
 find_program(VALGRIND "valgrind")
 set(MEMORYCHECK_COMMAND ${VALGRIND})
 set(MEMORYCHECK_SUPPRESSIONS "")
-#set(MEMORYCHECK_COMMAND_OPTIONS
-#        --gen-suppressions=all
-#        -v
-#        --trace-children=yes
-#        --leak-check=full
-#        --show-reachable=yes
-#        --num-callers=50
-#        ${MEMORYCHECK_SUPPRESSIONS}
-#        CACHE STRING "Options to pass to the memory checker")
-
 set(MEMORYCHECK_COMMAND_OPTIONS
-        --error-exitcode=1
+        --gen-suppressions=all
+        -v
         -s
+        --error-exitcode=1
         --leak-check=full
+        --show-reachable=yes
+        --num-callers=50
+        ${MEMORYCHECK_SUPPRESSIONS}
         --errors-for-leak-kinds=definite,indirect,possible,reachable
         --trace-children=yes
-        --vgdb=full
-        --vgdb-error=0)
-#separate_arguments(MEMORYCHECK_COMMAND_OPTIONS)
+#        --vgdb=no
+#        --vgdb-error=0
+        CACHE STRING "Options to pass to the memory checker")
 
 include(CTest)
 

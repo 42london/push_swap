@@ -6,7 +6,7 @@
 #    By: abelov <abelov@student.42london.com>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/18 20:29:32 by abelov            #+#    #+#              #
-#    Updated: 2023/11/20 15:50:09 by abelov           ###   ########.fr        #
+#    Updated: 2023/12/28 22:59:25 by abelov           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,6 @@ include $(addsuffix /Makefile.mk,$(DIRS))
 BUILD_DIR		= build
 OBJS			= $(SRCS:%.c=%.o)
 BUILD_OBJS		= $(SRCS:%.c=$(BUILD_DIR)/%.o)
-#OBJS			:= $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRCS))
 ASM_FILES		= $(SRCS:.c=.s)
 
 all: $(NAME)
