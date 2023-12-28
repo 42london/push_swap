@@ -4,11 +4,13 @@ set confirm off
 set verbose on
 set logging on
 set trace-commands on
+set print inferior-events on
 
 define target remote
 set remote exec-file ./bin/push_swap
 show remote exec-file
-# file ./bin/push_swap
+set debug target 0
+file ./bin/push_swap
 if $argc == 1
     target extended-remote $arg0
 end
@@ -27,19 +29,27 @@ end
 if $argc == 6
     target extended-remote $arg0 $arg1 $arg2 $arg3 $arg4 $arg5
 end
+if $argc == 7
+    target extended-remote $arg0 $arg1 $arg2 $arg3 $arg4 $arg5 $arg6
+end
+if $argc == 8
+    target extended-remote $arg0 $arg1 $arg2 $arg3 $arg4 $arg5 $arg6 $arg7
+end
 set breakpoint pending on
-break main.c:17
+break main
+
 #monitor reset halt
 info inferiors
-#start
-info inferiors
+info threads
+info files
+info target
+maintenance info sections
 end
 
 set follow-fork-mode child
+set follow-exec-mode new
 set detach-on-fork off
-#catch fork
+catch fork
 
 show user
 #show auto-load
-
-
