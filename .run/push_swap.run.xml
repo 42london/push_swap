@@ -1,14 +1,11 @@
 <component name="ProjectRunConfigurationManager">
     <configuration default="false" name="push_swap" type="CMakeRunConfiguration"
-                   factoryName="Application" PROGRAM_PARAMS="4 67 3 87 23"
-                   REDIRECT_INPUT="false" ELEVATE="false"
-                   USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true"
-                   PROJECT_NAME="push_swap" TARGET_NAME="push_swap"
-                   CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="push_swap"
+                   factoryName="Application" REDIRECT_INPUT="false"
+                   ELEVATE="false" USE_EXTERNAL_CONSOLE="false"
+                   PASS_PARENT_ENVS_2="true" PROJECT_NAME="push_swap"
+                   TARGET_NAME="push_swap" CONFIG_NAME="Debug"
+                   RUN_TARGET_PROJECT_NAME="push_swap"
                    RUN_TARGET_NAME="push_swap">
-        <envs>
-            <env name="ARG" value="&quot;4 67 3 87 23&quot;"/>
-        </envs>
         <method v="2">
             <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask"
                     enabled="true"/>

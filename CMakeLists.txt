@@ -14,10 +14,8 @@ set(CMAKE_REQUIRED_LIBRARIES "-lbsd")
 
 include_directories(include)
 
-set(FT_HEADERS "")
-set(FT_SOURCES "")
-file(GLOB FT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/libft/**/ft_*.h")
-file(GLOB FT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/libft/**/ft_*.c")
+file(GLOB FTLIB_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/libft/*.h")
+file(GLOB FTLIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/libft/**/ft_*.c")
 
 set(FTLIB_name ft)
 set(FTLIB_filename libft.a)
@@ -26,13 +24,13 @@ add_custom_command(OUTPUT ${FTLIB_dir}/${FTLIB_filename}
         COMMAND make -C ${FTLIB_dir}
         )
 add_custom_target(${FTLIB_filename} DEPENDS ${FTLIB_dir}/${FTLIB_filename})
-target_sources(${FTLIB_filename} PRIVATE ${FT_HEADERS} ${FT_SOURCES})
 
 add_library(${FTLIB_name} STATIC IMPORTED)
 add_dependencies(${FTLIB_name} ${FTLIB_filename})
 set_target_properties(${FTLIB_name} PROPERTIES
         IMPORTED_LOCATION ${FTLIB_dir}/${FTLIB_filename} # Make sure to use absolute path here
-        INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+        INTERFACE_SOURCES "${FTLIB_HEADERS};${FTLIB_SOURCES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${FTLIB_dir}"
         INTERFACE_COMPILE_DEFINITIONS "OPTIMISTIC"
 )
 
@@ -90,7 +88,9 @@ set(MEMORYCHECK_COMMAND_OPTIONS
 
 include(CTest)
 
-add_test(NAME test1 COMMAND $<TARGET_FILE:${TARGET_NAME}> 4 5 6)
-set(CTEST_TEST_TIMEOUT 500) # long for valgrind.
+add_test(NAME test1 COMMAND $<TARGET_FILE:${TARGET_NAME}> 2 1 3 6 5 8)
 add_test(NAME memcheck_${TARGET_NAME}
         COMMAND "${MEMORYCHECK_COMMAND}" ${MEMORYCHECK_COMMAND_OPTIONS} $<TARGET_FILE:${TARGET_NAME}>)
+set_tests_properties(test1 memcheck_${TARGET_NAME}
+        PROPERTIES
+            TIMEOUT 500) # long for valgrind.
