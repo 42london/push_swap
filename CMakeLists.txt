@@ -6,8 +6,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-narrowing")
 set(CMAKE_CXX_STANDARD 98)
 set(CMAKE_C_STANDARD 90)
 
-cmake_policy(SET CMP0048 NEW)
-cmake_policy(SET CMP0075 NEW)
+cmake_policy(SET CMP0048 NEW) # PROJECT_VERSION
+cmake_policy(SET CMP0075 NEW) # honor ``CMAKE_REQUIRED_LIBRARIES``
 project("push_swap" VERSION 0.1.0 LANGUAGES C CXX ASM)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_REQUIRED_LIBRARIES "-lbsd")
@@ -44,13 +44,12 @@ file(GLOB TARGET_HEADERS "src/*.h")
 file(GLOB TARGET_SOURCES "src/*.c")
 
 set(TARGET_CFLAGS
-        -c -w
+        -c
         -g3
         -Wall -Wextra -Werror
         -fno-exceptions
         -ffunction-sections
         -fdata-sections
-        -fno-threadsafe-statics
         -O0)
 set(TARGET_LINK_FLAGS -w -lbsd -O0)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -66,6 +65,19 @@ set_target_properties(${TARGET_NAME} PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 )
+
+set(TEST_TARGET_NAME push_swap_test1)
+file(GLOB TEST_TARGET_HEADERS "tests/*.h")
+file(GLOB TEST_TARGET_SOURCES "tests/*.c")
+add_executable(${TEST_TARGET_NAME} ${TEST_TARGET_HEADERS} ${TEST_TARGET_SOURCES})
+target_include_directories(${TEST_TARGET_NAME} PRIVATE include src)
+target_compile_options(${TEST_TARGET_NAME} PRIVATE ${TARGET_CFLAGS})
+target_link_options(${TEST_TARGET_NAME} PRIVATE ${TARGET_LINK_FLAGS})
+target_link_libraries(${TEST_TARGET_NAME} bsd ${FTLIB_name} Threads::Threads)
+set_target_properties(${TEST_TARGET_NAME} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 # https://youtrack.jetbrains.com/issue/CPP-22289
 find_program(VALGRIND "valgrind")
@@ -87,10 +99,26 @@ set(MEMORYCHECK_COMMAND_OPTIONS
         CACHE STRING "Options to pass to the memory checker")
 
 include(CTest)
+include(FindUnixCommands)
 
-add_test(NAME test1 COMMAND $<TARGET_FILE:${TARGET_NAME}> 2 1 3 6 5 8)
+add_test(NAME test1
+        COMMAND
+            ${BASH} -c "ARG='2 1 3 6 5 8'; $<TARGET_FILE:${TARGET_NAME}> $ARG | ./checker_linux $ARG"
+        WORKING_DIRECTORY
+            "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+        )
+add_test(NAME test2
+        COMMAND
+            env ARG="2 1 3 6 5 8" $<TARGET_FILE:${TARGET_NAME}> 2 1 3 6 5 8
+        WORKING_DIRECTORY
+            "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+        )
 add_test(NAME memcheck_${TARGET_NAME}
-        COMMAND "${MEMORYCHECK_COMMAND}" ${MEMORYCHECK_COMMAND_OPTIONS} $<TARGET_FILE:${TARGET_NAME}>)
+        COMMAND
+            "${MEMORYCHECK_COMMAND}" ${MEMORYCHECK_COMMAND_OPTIONS} $<TARGET_FILE:${TARGET_NAME}>
+
+        CONFIGURATIONS
+            DEBUG)
 set_tests_properties(test1 memcheck_${TARGET_NAME}
         PROPERTIES
             TIMEOUT 500) # long for valgrind.
