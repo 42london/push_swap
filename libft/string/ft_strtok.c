@@ -29,9 +29,9 @@
  */
 char	*ft_strtok(char *str, const char *delim)
 {
-	static char *last;
+	static char	*last;
 
-	return ft_strtok_r(str, delim, &last);
+	return (ft_strtok_r(str, delim, &last));
 }
 
 /**
@@ -47,19 +47,19 @@ char	*ft_strtok(char *str, const char *delim)
  */
 char	*ft_strtok_r(char *str, const char *delim, char **saveptr)
 {
-	char *token;
+	char	*token;
 
 	if (!str)
 	{
 		str = *saveptr;
-		if(!str)
-			return NULL;
+		if (!str)
+			return (NULL);
 	}
 	str += ft_strspn(str, delim);
 	if (*str == '\0')
 	{
 		*saveptr = NULL;
-		return NULL;
+		return (NULL);
 	}
 	token = str;
 	str += ft_strcspn(str, delim);
@@ -70,5 +70,5 @@ char	*ft_strtok_r(char *str, const char *delim, char **saveptr)
 		*str++ = '\0';
 		*saveptr = str;
 	}
-	return token;
+	return (token);
 }

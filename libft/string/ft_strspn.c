@@ -23,7 +23,7 @@ size_t	ft_strspn(const char *s, const char *accept)
 	while (*s)
 	{
 		if (!ft_strchr(accept, *s))
-			break;
+			break ;
 		s++;
 	}
 	return (s - optr);
@@ -40,7 +40,7 @@ size_t	ft_strcspn(const char *s, const char *reject)
 	while (*s)
 	{
 		if (ft_strchr(reject, *s))
-			break;
+			break ;
 		s++;
 	}
 	return (s - optr);

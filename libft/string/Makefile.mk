@@ -13,7 +13,9 @@
 # string sources
 #VPATH   := $(VPATH):${LIBFTSRCDIR}/string
 
-FILES   = ft_bzero.c \
+FILES	= ft_bsdstr.c \
+		   ft_bzero.c \
+           ft_bsdstr.c \
            ft_mem.c \
            ft_split.c \
            ft_str1.c \

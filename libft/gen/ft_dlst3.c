@@ -12,6 +12,18 @@
 
 #include "libft.h"
 
+t_dlist	*ft_dlist_prepend(t_dlist *list, int value)
+{
+	t_dnode	*new_dnode;
+
+	if (!list)
+		return (NULL);
+	new_dnode = ft_dnode_new(value);
+	if (!new_dnode)
+		return (NULL);
+	return (ft_dlist_add_front(list, new_dnode));
+}
+
 /**
  * Shift up all elements of stack a by 1.
  * The first element becomes the last one.

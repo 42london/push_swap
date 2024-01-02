@@ -1,10 +1,18 @@
 # https://youtrack.jetbrains.com/issue/CPP-7090
 
 set confirm off
-set verbose on
-set logging on
+#set verbose on
+#set logging on
 set trace-commands on
 set print inferior-events on
+
+show debug-file-directory
+set debug-file-directory /usr/lib/debug
+directory ~/staging/glibc-2.31
+directory ~/staging/glibc-2.31/elf
+directory ~/staging/glibc-2.31/stdlib
+directory ~/staging/glibc-2.31/sysdeps/x86_64/multiarch
+show directories
 
 define target remote
 set remote exec-file ./bin/push_swap

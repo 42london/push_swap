@@ -35,6 +35,15 @@ int		ft_isascii(int c);
 int		ft_isprint(int c);
 int		ft_toupper(int c);
 int		ft_tolower(int c);
+/*
+ * Copy src to dest, truncating or null-padding to always copy n bytes.
+ * Return dest.
+ * If there is no terminating null byte in the first n bytes of src, strncpy()
+ * produces an unterminated string in dest.
+ * `const char*` is a mutable pointer to an immutable character/string.
+ * You cannot change the contents of the location(s) this pointer points to.
+ */
+char	*ft_strncpy(char *dest, char *src, unsigned int n);
 size_t	ft_strlen(const char *s);
 /**
  *  The ft_strlcat() function concatenates strings. It take the full size of

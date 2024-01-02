@@ -45,7 +45,9 @@ file(GLOB TARGET_SOURCES "src/*.c")
 
 set(TARGET_CFLAGS
         -c
-        -g3
+        -g3 -fvar-tracking -fvar-tracking-assignments
+        -gdwarf-4 -gstrict-dwarf
+        -L/usr/lib/debug
         -Wall -Wextra -Werror
         -fno-exceptions
         -ffunction-sections
@@ -66,6 +68,17 @@ set_target_properties(${TARGET_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 )
 
+set(TARGET_NAME checker)
+file(GLOB TARGET_HEADERS "checker/*.h")
+file(GLOB TARGET_SOURCES "checker/*.c")
+add_executable(${TARGET_NAME} ${TARGET_HEADERS} ${TARGET_SOURCES})
+target_include_directories(${TARGET_NAME} PRIVATE include src)
+target_compile_options(${TARGET_NAME} PRIVATE ${TARGET_CFLAGS})
+target_link_options(${TARGET_NAME} PRIVATE ${TARGET_LINK_FLAGS})
+target_link_libraries(${TARGET_NAME} bsd ${FTLIB_name} Threads::Threads)
+set_target_properties(${TARGET_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+
 set(TEST_TARGET_NAME push_swap_test1)
 file(GLOB TEST_TARGET_HEADERS "tests/*.h")
 file(GLOB TEST_TARGET_SOURCES "tests/*.c")
@@ -75,8 +88,6 @@ target_compile_options(${TEST_TARGET_NAME} PRIVATE ${TARGET_CFLAGS})
 target_link_options(${TEST_TARGET_NAME} PRIVATE ${TARGET_LINK_FLAGS})
 target_link_libraries(${TEST_TARGET_NAME} bsd ${FTLIB_name} Threads::Threads)
 set_target_properties(${TEST_TARGET_NAME} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 # https://youtrack.jetbrains.com/issue/CPP-22289
@@ -116,7 +127,6 @@ add_test(NAME test2
 add_test(NAME memcheck_${TARGET_NAME}
         COMMAND
             "${MEMORYCHECK_COMMAND}" ${MEMORYCHECK_COMMAND_OPTIONS} $<TARGET_FILE:${TARGET_NAME}>
-
         CONFIGURATIONS
             DEBUG)
 set_tests_properties(test1 memcheck_${TARGET_NAME}

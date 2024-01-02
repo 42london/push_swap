@@ -11,67 +11,58 @@
 /* ************************************************************************** */
 #include <sysexits.h>
 #include "push_swap.h"
-#include <string.h>
-
-/* --- PRINTF_BYTE_TO_BINARY macro's --- */
-#define PRINTF_BINARY_PATTERN_INT8 "%c%c%c%c%c%c%c%c"
-#define PRINTF_BYTE_TO_BINARY_INT8(i)    \
-    (((i) & 0x80ll) ? '1' : '0'), \
-    (((i) & 0x40ll) ? '1' : '0'), \
-    (((i) & 0x20ll) ? '1' : '0'), \
-    (((i) & 0x10ll) ? '1' : '0'), \
-    (((i) & 0x08ll) ? '1' : '0'), \
-    (((i) & 0x04ll) ? '1' : '0'), \
-    (((i) & 0x02ll) ? '1' : '0'), \
-    (((i) & 0x01ll) ? '1' : '0')
-
-#define PRINTF_BINARY_PATTERN_INT16 \
-    PRINTF_BINARY_PATTERN_INT8              PRINTF_BINARY_PATTERN_INT8
-#define PRINTF_BYTE_TO_BINARY_INT16(i) \
-    PRINTF_BYTE_TO_BINARY_INT8((i) >> 8),   PRINTF_BYTE_TO_BINARY_INT8(i)
-#define PRINTF_BINARY_PATTERN_INT32 \
-    PRINTF_BINARY_PATTERN_INT16             PRINTF_BINARY_PATTERN_INT16
-#define PRINTF_BYTE_TO_BINARY_INT32(i) \
-    PRINTF_BYTE_TO_BINARY_INT16((i) >> 16), PRINTF_BYTE_TO_BINARY_INT16(i)
-#define PRINTF_BINARY_PATTERN_INT64    \
-    PRINTF_BINARY_PATTERN_INT32             PRINTF_BINARY_PATTERN_INT32
-#define PRINTF_BYTE_TO_BINARY_INT64(i) \
-    PRINTF_BYTE_TO_BINARY_INT32((i) >> 32), PRINTF_BYTE_TO_BINARY_INT32(i)
-/* --- end macros --- */
-
-
-
-
-
+#include "test1.h"
 
 int	main(int argc, char **argv)
 {
 	char	*str;
 	char	*saveptr;
 	char	tok[4] = {0};
+	u_int32_t	i;
 
 	if (argc < 1)
 		return (EX_NOINPUT);
 	(void)argv;
 
+	i = 24947;
+
+	ft_printf("itoa: %s\n",(char *)&i);
 
 
-	setenv("ARG", "sa\npb\npb\npb\nsa\npa\npa\npa\nrrr\n", 1);
-	str = ft_strtrim(getenv("ARG"), " ");
+	i = *(size_t*)tok;
+	ft_printf("My Flag "
+			  PRINTF_BINARY_PATTERN_INT32 "\n",
+			  PRINTF_BYTE_TO_BINARY_INT32(i));
+	ft_printf("Leading text "BYTE_TO_BINARY_PATTERN"\n", BYTE_TO_BINARY('\0'));
+
+	str = "sa pb pb pb sa pa pa pa rrr ";
+	setenv("ARG", str, 1);
+	str = getenv("ARG");
+	str = ft_strtrim(str, " ");
 
 
-	strncpy(tok, ft_strtok_r(str,"\n", &saveptr), 3);
-	while(*tok)
+	str = ft_strtok_r(str," ", &saveptr);
+	ft_strncpy(tok, str, 3);
+	while(saveptr)
 	{
+		i = *(size_t*)tok;
 		ft_printf("%s\n", tok);
-		ft_printf("%d\n", *(int*)tok);
-		printf("My Flag "
+		ft_printf("%u\n", i);
+		ft_printf("Leading text "BYTE_TO_BINARY_PATTERN"\n", BYTE_TO_BINARY(tok[0]));
+		ft_printf("Leading text "BYTE_TO_BINARY_PATTERN"\n", BYTE_TO_BINARY(tok[1]));
+		ft_printf("Leading text "BYTE_TO_BINARY_PATTERN"\n", BYTE_TO_BINARY(tok[2]));
+		ft_printf("Leading text "BYTE_TO_BINARY_PATTERN"\n", BYTE_TO_BINARY(tok[3]));
+		ft_printf("My Flag "
 			   PRINTF_BINARY_PATTERN_INT32 "\n",
 			   PRINTF_BYTE_TO_BINARY_INT32(*(int*)tok));
 
-		strncpy(tok, ft_strtok_r(NULL,"\n", &saveptr), 3);
+		ft_strncpy(tok, ft_strtok_r(NULL," ", &saveptr), 3);
 	}
 	free(str);
+	str = NULL;
 
+	ft_printf("My LSB "
+			  PRINTF_BINARY_PATTERN_INT32 "\n",
+			  PRINTF_BYTE_TO_BINARY_INT32(24944));
 	return (EX_OK);
 }

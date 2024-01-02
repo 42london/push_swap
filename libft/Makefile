@@ -12,7 +12,7 @@
 
 NAME			:= libft.a
 CC				:= cc
-CFLAGS			:= -Wall -Wextra -Werror -Wimplicit -I .
+CFLAGS			:= -g3 -Wall -Wextra -Werror -Wimplicit -I . -L/usr/lib/debug
 CTAGS			:= ctags
 LIB_COMMAND		:= ar rcs
 RM				:= /bin/rm
