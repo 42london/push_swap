@@ -14,6 +14,7 @@
 # define PUSH_SWAP_H
 # include "libft.h"
 
+/*
 # define COMMAND_ENUM_VALUES \
     X(sa, 0x6173)           \
     X(sb, 0x6273)           \
@@ -26,5 +27,21 @@
     X(rra, 0x617272)        \
     X(rrb, 0x627272)        \
     X(rrr, 0x727272)
+*/
+
+typedef enum command
+{
+	sa = 0x6173,
+	sb = 0x6273,
+	ss = 0x7373,
+	pa = 0x6170,
+	pb = 0x6270,
+	ra = 0x6172,
+	rb = 0x6272,
+	rr = 0x7272,
+	rra = 0x617272,
+	rrb = 0x627272,
+	rrr = 0x727272
+}			t_command;
 
 #endif //PUSH_SWAP_H
