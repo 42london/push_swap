@@ -12,29 +12,99 @@
 #include <sysexits.h>
 #include "push_swap.h"
 
+void	dnode_print(void *data, void *user_data)
+{
+	(void)user_data;
+	ft_printf("%d\n", *(int *)data);
+}
+
+typedef void	(*t_dispatch_f)(t_dlist *dlist_a, t_dlist *dlist_b);
+
+void	do_swap_a(t_dlist *dlist_a, t_dlist *dlist_b)
+{
+	t_dnode	*dnode1;
+	t_dnode	*dnode2;
+
+	(void )dlist_b;
+	if (dlist_a->size > 1) {
+		dnode1 = ft_dlist_pop(dlist_a);
+		dnode2 = ft_dlist_pop(dlist_a);
+		ft_dlist_push(dlist_a, dnode1);
+		ft_dlist_push(dlist_a, dnode2);
+	}
+}
+
+void	do_push_a(t_dlist *dlist_a, t_dlist *dlist_b)
+{
+	t_dnode	*dnode;
+
+	dnode = ft_dlist_pop(dlist_b);
+	ft_dlist_push(dlist_a, dnode);
+}
+
+
+void	do_push_b(t_dlist *dlist_a, t_dlist *dlist_b)
+{
+	t_dnode	*dnode;
+
+	dnode = ft_dlist_pop(dlist_a);
+	ft_dlist_push(dlist_b, dnode);
+}
+
+static t_dispatch_f const	push_dispatch[] = {
+		[sa] = do_swap_a,
+		[pb] = do_push_b,
+		[pa] = do_push_a
+};
+
 int	main(int argc, char **argv)
 {
-	char			*str;
-	char			*saveptr;
-	char			tok[4];
-	int32_t			i;
+	int		argg;
+	char	*str;
+	char	*str0;
+	char	*saveptr;
+	char	tok[4];
+	int32_t	i;
+	t_dlist	*dlist_a;
+	t_dlist	*dlist_b;
 
 	if (argc < 1)
 		return (EX_NOINPUT);
-	(void)argv;
-	str = "sa sb ss pa pb ra rb rr rra rrb rrr";
-//	setenv("ARG", str, 1);
+	argg = 1;
+	dlist_a = ft_dlst_new();
+	dlist_b = ft_dlst_new();
+	while (argg < argc)
+		ft_dlist_append(dlist_a, ft_atoi(argv[argg++]));
+	ft_printf("stack a:\n");
+	ft_dlist_foreach(dlist_a, dnode_print, NULL);
+	ft_printf("stack b:\n");
+	ft_dlist_foreach(dlist_b, dnode_print, NULL);
+
+	str = "pb pb pb sa pa pa pa";
 	str = getenv("ARG");
-	str = ft_strtrim(str, " ");
-	str = ft_strtok_r(str, " ", &saveptr);
+	if(!str)
+		return (EX_UNAVAILABLE);
+	str0 = ft_strtrim(str, "' '");
+	str = ft_strtok_r(str0, " ", &saveptr);
 	while (str && *str)
 	{
 		*(int32_t *)tok = 0;
 		ft_strncpy(tok, str, 3);
 		i = *(int32_t *)tok;
-		ft_printf("%s = 0x%x,\n", (char *)tok, i);
+
+		if (push_dispatch[i])
+			push_dispatch[i](dlist_a, dlist_b);
 		str = ft_strtok_r(NULL, " ", &saveptr);
 	}
+	ft_printf("=========\n");
 //	ft_printf("%s\n", (char *)(int []){sa});
+	ft_printf("stack a:\n");
+	ft_dlist_foreach(dlist_a, dnode_print, NULL);
+	ft_printf("stack b:\n");
+	ft_dlist_foreach(dlist_b, dnode_print, NULL);
+	free(str0);
+	ft_dlist_free_full(&dlist_a);
+	ft_dlist_free_full(&dlist_b);
+
 	return (EX_OK);
 }

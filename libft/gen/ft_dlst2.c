@@ -24,8 +24,11 @@ t_dnode	*ft_dlist_pop(t_dlist *list)
 	{
 		elem = list->head;
 		next = elem->next;
-		next->prev = NULL;
+		if(next)
+			next->prev = NULL;
 		list->head = next;
+		elem->next = NULL;
+		elem->prev = NULL;
 	}
 	return (elem);
 }
@@ -44,22 +47,26 @@ t_dnode	*ft_dlist_pop_back(t_dlist *list)
 		prev = elem->prev;
 		prev->next = NULL;
 		list->tail = prev;
+		elem->next = NULL;
+		elem->prev = NULL;
 	}
 	return (elem);
 }
 
-t_dlist	*ft_dlist_add_back(t_dlist *list, t_dnode *new_dnode)
+t_dlist	*ft_dlist_push_back(t_dlist *list, t_dnode *dnode)
 {
 	list->size++;
 	if (list->head && list->tail)
 	{
-		list->tail->next = new_dnode;
-		new_dnode->prev = list->tail;
-		list->tail = new_dnode;
+		list->tail->next = dnode;
+		dnode->prev = list->tail;
+		list->tail = dnode;
 		return (list);
 	}
-	list->head = new_dnode;
-	list->tail = new_dnode;
+	dnode->prev = NULL;
+	dnode->next = NULL;
+	list->head = dnode;
+	list->tail = dnode;
 	return (list);
 }
 
@@ -72,20 +79,20 @@ t_dlist	*ft_dlist_append(t_dlist *list, int value)
 	new_dnode = ft_dnode_new(value);
 	if (!new_dnode)
 		return (NULL);
-	return (ft_dlist_add_back(list, new_dnode));
+	return (ft_dlist_push_back(list, new_dnode));
 }
 
-t_dlist	*ft_dlist_add_front(t_dlist *list, t_dnode *new_dnode)
+t_dlist	*ft_dlist_push(t_dlist *list, t_dnode *dnode)
 {
 	list->size++;
 	if (list->head && list->tail)
 	{
-		list->head->prev = new_dnode;
-		new_dnode->next = list->head;
-		list->head = new_dnode;
+		list->head->prev = dnode;
+		dnode->next = list->head;
+		list->head = dnode;
 		return (list);
 	}
-	list->head = new_dnode;
-	list->tail = new_dnode;
+	list->head = dnode;
+	list->tail = dnode;
 	return (list);
 }

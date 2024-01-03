@@ -10,6 +10,11 @@ show debug-file-directory
 set debug-file-directory /usr/lib/debug
 directory ~/staging/glibc-2.31
 directory ~/staging/glibc-2.31/elf
+directory ~/staging/glibc-2.31/nptl
+directory ~/staging/glibc-2.31/dlfcn
+directory ~/staging/glibc-2.31/misc
+directory ~/staging/glibc-2.31/csu
+directory ~/staging/glibc-2.31/ctype
 directory ~/staging/glibc-2.31/stdlib
 directory ~/staging/glibc-2.31/sysdeps/x86_64/multiarch
 show directories

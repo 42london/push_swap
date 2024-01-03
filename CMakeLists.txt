@@ -68,18 +68,18 @@ set_target_properties(${TARGET_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin"
 )
 
-set(TARGET_NAME checker)
+set(CHECKER_TARGET_NAME checker)
 file(GLOB TARGET_HEADERS "checker/*.h")
 file(GLOB TARGET_SOURCES "checker/*.c")
-add_executable(${TARGET_NAME} ${TARGET_HEADERS} ${TARGET_SOURCES})
-target_include_directories(${TARGET_NAME} PRIVATE include src)
-target_compile_options(${TARGET_NAME} PRIVATE ${TARGET_CFLAGS})
-target_link_options(${TARGET_NAME} PRIVATE ${TARGET_LINK_FLAGS})
-target_link_libraries(${TARGET_NAME} bsd ${FTLIB_name} Threads::Threads)
-set_target_properties(${TARGET_NAME} PROPERTIES
+add_executable(${CHECKER_TARGET_NAME} ${TARGET_HEADERS} ${TARGET_SOURCES})
+target_include_directories(${CHECKER_TARGET_NAME} PRIVATE include src)
+target_compile_options(${CHECKER_TARGET_NAME} PRIVATE ${TARGET_CFLAGS})
+target_link_options(${CHECKER_TARGET_NAME} PRIVATE ${TARGET_LINK_FLAGS})
+target_link_libraries(${CHECKER_TARGET_NAME} bsd ${FTLIB_name} Threads::Threads)
+set_target_properties(${CHECKER_TARGET_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
-set(TEST_TARGET_NAME push_swap_test1)
+set(TEST_TARGET_NAME test1)
 file(GLOB TEST_TARGET_HEADERS "tests/*.h")
 file(GLOB TEST_TARGET_SOURCES "tests/*.c")
 add_executable(${TEST_TARGET_NAME} ${TEST_TARGET_HEADERS} ${TEST_TARGET_SOURCES})
@@ -112,13 +112,21 @@ set(MEMORYCHECK_COMMAND_OPTIONS
 include(CTest)
 include(FindUnixCommands)
 
+set(test1_command_start "ARG='2 1 3 6 5 8'")
+set(test1_command "ARG='2 1 3 6 5 8'; ! $<TARGET_FILE:${TARGET_NAME}> \"\${ARG}\" | ./checker_linux $ARG | grep -v OK")
 add_test(NAME test1
         COMMAND
-            ${BASH} -c "ARG='2 1 3 6 5 8'; $<TARGET_FILE:${TARGET_NAME}> $ARG | ./checker_linux $ARG"
+            ${BASH} -c "${test1_command}"
         WORKING_DIRECTORY
             "${CMAKE_CURRENT_SOURCE_DIR}/bin"
         )
 add_test(NAME test2
+        COMMAND
+            env "ARG='sa pb pb pb sa pa pa pa'" $<TARGET_FILE:${CHECKER_TARGET_NAME}> '2 1 3 6 5 8'
+        WORKING_DIRECTORY
+            "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+        )
+add_test(NAME test3
         COMMAND
             env ARG="2 1 3 6 5 8" $<TARGET_FILE:${TARGET_NAME}> 2 1 3 6 5 8
         WORKING_DIRECTORY
